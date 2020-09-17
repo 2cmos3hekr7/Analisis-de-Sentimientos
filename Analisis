@@ -1,0 +1,24 @@
+import pandas as pd
+import json
+tweets = []
+for line in open('Tweets.json', 'r'):
+    tweets.append(json.loads(line))
+    
+tweets_1 = pd.DataFrame(tweets)
+dfTweet1 = tweets_1['text'].dropna().reset_index()
+dfTweet1.columns = ['Indice','tweet']
+dfTweet = dfTweet1.loc[:,'tweet']
+
+colnames = ['sentiment','value']
+dfSentiment = pd.read_table('Sentimientos.txt', sep = '\t',
+                            skiprows = 0,names=colnames)
+
+
+newDF = pd.DataFrame(columns = ['tweet', 'value'])
+indexSentTweet = [] 
+    
+for indexSent, sent in enumerate(dfSentiment):
+    indexValueTweet = [[dfTweet['tweet'].iloc[index], dfSentiment['value'].iloc[index]] for index, x in enumerate(dfTweet['tweet'].str.contains(sent)) if x] # List comprehension to reduce the number of "for".
+
+
+newDF = newDF.append(indexValueTweet)
